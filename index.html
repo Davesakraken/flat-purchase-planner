@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Flat purchase · Decision planner</title>
+    <style>
+        :root {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: #17262a;
+            background: #f5f7f6;
+            font-synthesis: none
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        .shell {
+            max-width: 1190px;
+            margin: auto;
+            padding: 34px 30px 80px
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: #548477
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 25px
+        }
+
+        .top h1 {
+            font-size: clamp(30px, 4vw, 48px);
+            letter-spacing: -.055em;
+            line-height: 1.06;
+            margin: 13px 0
+        }
+
+        .muted {
+            color: #68777a;
+            line-height: 1.5
+        }
+
+        .top .muted {
+            max-width: 610px
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end
+        }
+
+        .btn {
+            border: 1px solid #ccd9d5;
+            background: white;
+            border-radius: 10px;
+            color: #213e39;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 650
+        }
+
+        .btn.dark {
+            background: #193d36;
+            color: white;
+            border-color: #193d36
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 312px;
+            gap: 22px;
+            margin-top: 30px
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e1e8e5;
+            border-radius: 17px;
+            padding: 24px;
+            box-shadow: 0 6px 24px #1a3b2906
+        }
+
+        .hero {
+            background: #193d36;
+            color: white;
+            border-radius: 17px;
+            padding: 25px;
+            margin-bottom: 20px
+        }
+
+        .hero .eyebrow {
+            color: #afcec3
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 21px
+        }
+
+        .metric small {
+            color: #a7c2b8;
+            font-size: 12px
+        }
+
+        .metric strong {
+            display: block;
+            font-size: 28px;
+            letter-spacing: -.04em;
+            margin: 5px 0
+        }
+
+        .metric span {
+            font-size: 12px;
+            color: #c5d9d1
+        }
+
+        .heading {
+            font-size: 20px;
+            letter-spacing: -.03em;
+            margin: 0 0 6px
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 0 18px;
+            gap: 10px
+        }
+
+        .pill {
+            padding: 5px 9px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 11px;
+            background: #e5f3ed;
+            color: #286b4e;
+            white-space: nowrap
+        }
+
+        .pill.amber {
+            background: #fff1d6;
+            color: #926019
+        }
+
+        .pill.grey {
+            background: #edf0f0;
+            color: #5c6b6c
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 17px
+        }
+
+        .step {
+            border: 1px solid #e3eae7;
+            border-radius: 14px;
+            overflow: hidden
+        }
+
+        .step-head {
+            display: flex;
+            gap: 12px;
+            align-items: start;
+            background: #f9fbfa;
+            padding: 17px 18px;
+            border-bottom: 1px solid #e8eeeb
+        }
+
+        .number {
+            width: 31px;
+            height: 31px;
+            flex: none;
+            display: grid;
+            place-items: center;
+            background: #deeee7;
+            border-radius: 9px;
+            color: #23664d;
+            font-size: 13px;
+            font-weight: 800
+        }
+
+        .step h3 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            letter-spacing: -.02em
+        }
+
+        .step p {
+            margin: 0;
+            color: #647579;
+            font-size: 12px;
+            line-height: 1.5
+        }
+
+        .task {
+            display: flex;
+            gap: 13px;
+            padding: 13px 18px;
+            border-bottom: 1px solid #f0f2f1;
+            align-items: start;
+            cursor: pointer
+        }
+
+        .task:last-child {
+            border: 0
+        }
+
+        .task:hover {
+            background: #fbfdfc
+        }
+
+        .task input {
+            appearance: none;
+            flex: none;
+            width: 19px;
+            height: 19px;
+            border: 1.7px solid #acbab6;
+            border-radius: 5px;
+            margin: 1px 0 0;
+            position: relative
+        }
+
+        .task input:checked {
+            background: #287c5d;
+            border-color: #287c5d
+        }
+
+        .task input:checked:after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            left: 3px;
+            top: -2px;
+            font-weight: 800;
+            font-size: 15px
+        }
+
+        .task span {
+            font-size: 13px;
+            font-weight: 580;
+            line-height: 1.5
+        }
+
+        .task input:checked+span {
+            text-decoration: line-through;
+            color: #93a19b
+        }
+
+        .right {
+            display: flex;
+            flex-direction: column;
+            gap: 18px
+        }
+
+        .progressbar {
+            height: 9px;
+            background: #e6eeea;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 13px 0 9px
+        }
+
+        .progressbar div {
+            height: 100%;
+            width: 0;
+            background: #398b67;
+            transition: width .2s
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center
+        }
+
+        .big {
+            font-size: 32px;
+            letter-spacing: -.045em;
+            font-weight: 800
+        }
+
+        .mini {
+            font-size: 12px;
+            color: #697a78
+        }
+
+        .facts {
+            display: grid;
+            gap: 12px
+        }
+
+        .fact {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid #edf1ef;
+            padding-bottom: 11px;
+            font-size: 13px
+        }
+
+        .fact:last-child {
+            border: 0;
+            padding: 0
+        }
+
+        .fact b {
+            text-align: right
+        }
+
+        .callout {
+            background: #fff8eb;
+            border: 1px solid #f3e3c6;
+            padding: 14px;
+            border-radius: 11px;
+            color: #765421;
+            font-size: 12px;
+            line-height: 1.55
+        }
+
+        .risk {
+            border-left: 3px solid #d6a253;
+            padding-left: 11px;
+            margin-top: 16px
+        }
+
+        .risk strong {
+            font-size: 13px
+        }
+
+        .risk p {
+            font-size: 12px;
+            color: #65736f;
+            line-height: 1.5;
+            margin: 5px 0 0
+        }
+
+        .fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px
+        }
+
+        .field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 750;
+            color: #667771;
+            margin-bottom: 6px
+        }
+
+        .field input {
+            width: 100%;
+            border: 1px solid #dbe5e0;
+            border-radius: 9px;
+            padding: 10px;
+            font-size: 14px;
+            background: #fff
+        }
+
+        .result {
+            border-radius: 12px;
+            background: #e9f3ee;
+            padding: 18px;
+            margin-top: 17px
+        }
+
+        .result strong {
+            font-size: 28px;
+            letter-spacing: -.04em
+        }
+
+        .cost-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #edf1ef;
+            padding: 8px 0;
+            font-size: 12px;
+            gap: 10px
+        }
+
+        .cost-row input {
+            width: 100px;
+            text-align: right;
+            border: 1px solid #dbe5e0;
+            border-radius: 8px;
+            padding: 7px
+        }
+
+        .cost-row:last-child {
+            border: 0
+        }
+
+        .notes {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            border: 1px solid #dce5e1;
+            border-radius: 10px;
+            padding: 13px;
+            line-height: 1.6;
+            font-size: 13px
+        }
+
+        .two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px
+        }
+
+        .evidence {
+            display: grid;
+            gap: 9px
+        }
+
+        .evidence div {
+            font-size: 12px;
+            line-height: 1.55;
+            padding: 11px 12px;
+            background: #f7faf8;
+            border-radius: 9px
+        }
+
+        .evidence b {
+            display: block;
+            margin-bottom: 3px
+        }
+
+        .foot {
+            margin-top: 24px;
+            color: #83918d;
+            font-size: 11px;
+            text-align: center
+        }
+
+        .save {
+            font-size: 11px;
+            color: #658476
+        }
+
+        .subhead {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .11em;
+            font-weight: 800;
+            color: #749084;
+            margin-bottom: 10px
+        }
+
+        @media(max-width:850px) {
+            .layout {
+                grid-template-columns: 1fr
+            }
+
+            .right {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr))
+            }
+
+            .top {
+                flex-direction: column
+            }
+
+            .actions {
+                justify-content: start
+            }
+        }
+
+        @media(max-width:550px) {
+            .shell {
+                padding: 20px 14px 55px
+            }
+
+            .panel,
+            .hero {
+                padding: 18px
+            }
+
+            .metrics {
+                gap: 9px
+            }
+
+            .metric strong {
+                font-size: 22px
+            }
+
+            .two,
+            .right,
+            .fields {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media print {
+            body {
+                background: white
+            }
+
+            .shell {
+                max-width: none;
+                padding: 0
+            }
+
+            .actions,
+            .foot,
+            .notes-panel {
+                display: none !important
+            }
+
+            .layout {
+                grid-template-columns: 1fr 265px;
+                gap: 12px
+            }
+
+            .panel,
+            .hero {
+                box-shadow: none;
+                break-inside: avoid;
+                padding: 16px
+            }
+
+            .step {
+                break-inside: avoid
+            }
+
+            .two {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .task {
+                padding: 8px
+            }
+
+            .top h1 {
+                font-size: 32px
+            }
+
+            @page {
+                size: A4;
+                margin: 12mm
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+        <header class="top">
+            <div>
+                <div class="eyebrow">Property purchase workspace · 12 October 2026</div>
+                <h1>The flat, examined.</h1>
+                <p class="muted">A practical decision plan for the £118,000 split-level flat. Track the paperwork, test
+                    affordability, and investigate defects before committing to the purchase.</p>
+            </div>
+            <div class="actions"><button class="btn" id="export">Export progress</button><button class="btn"
+                    id="reset">Reset checks</button><button class="btn dark" onclick="window.print()">Print / Save PDF
+                    ↗</button></div>
+        </header>
+        <div class="layout">
+            <main>
+                <section class="hero">
+                    <div class="eyebrow">Offer accepted · Subject to contract</div>
+                    <div class="metrics">
+                        <div class="metric"><small>Purchase price</small><strong>£118,000</strong><span>£7,000 below
+                                asking</span></div>
+                        <div class="metric"><small>Deposit · 10%</small><strong>£11,800</strong><span>90% LTV
+                                mortgage</span></div>
+                        <div class="metric"><small>Internal area</small><strong>76.7 m²</strong><span>825 sq ft ·
+                                advertised</span></div>
+                    </div>
+                </section>
+                <section class="panel">
+                    <div class="section-title">
+                        <div>
+                            <h2 class="heading">Your purchase roadmap</h2>
+                            <div class="muted" style="font-size:12px">Tick tasks as evidence arrives. Progress is saved
+                                in this browser.</div>
+                        </div><span class="pill" id="pct">0% complete</span>
+                    </div>
+                    <div class="steps" id="steps"></div>
+                </section>
+                <div class="two">
+                    <section class="panel">
+                        <h2 class="heading">What we know</h2>
+                        <p class="muted" style="font-size:12px">Estate-agent statements remain unverified until
+                            documents or inspections corroborate them.</p>
+                        <div class="evidence">
+                            <div><b>Share of freehold</b>Ownership structure reported; lease terms, ownership vehicle
+                                and decision rights still to check.</div>
+                            <div><b>Heating</b>Two living-room radiators; one per bedroom. Boiler approximately four
+                                years old with annual servicing reported.</div>
+                            <div><b>Condition</b>Agent reports no previous damp, mould or leaks; painting was allegedly
+                                cosmetic.</div>
+                            <div><b>Occupancy</b>Vacant since early September after a nine-year tenancy.</div>
+                            <div><b>Maintenance</b>No recent or planned major works or service-charge increases reported
+                                by the agent.</div>
+                        </div>
+                    </section>
+                    <section class="panel">
+                        <h2 class="heading">Space & layout</h2>
+                        <p class="muted" style="font-size:12px">Two-level arrangement; room dimensions from the agent's
+                            floor plan.</p>
+                        <div class="facts">
+                            <div class="fact"><span>Living room</span><b>5.77 × 4.85 m</b></div>
+                            <div class="fact"><span>Kitchen</span><b>4.57 × 2.29 m</b></div>
+                            <div class="fact"><span>Bedroom 1 (max)</span><b>4.85 × 3.66 m</b></div>
+                            <div class="fact"><span>Bedroom 2</span><b>3.28 × 2.03 m</b></div>
+                            <div class="fact"><span>Bathroom</span><b>2.29 × 1.73 m</b></div>
+                        </div>
+                        <p class="mini" style="margin-top:15px">Measurements are approximate; irregular rooms have less
+                            usable space than a simple rectangle.</p>
+                    </section>
+                </div>
+                <section class="panel notes-panel" style="margin-top:20px">
+                    <div class="section-title">
+                        <h2 class="heading">Viewing & decision notes</h2><span class="save" id="saved">Saved
+                            locally</span>
+                    </div><textarea class="notes" id="notes"
+                        placeholder="Capture survey findings, questions for your solicitor, quotations, decisions, and anything to revisit…"></textarea>
+                </section>
+            </main>
+            <aside class="right">
+                <section class="panel">
+                    <div class="subhead">Checklist progress</div>
+                    <div class="flex"><strong class="big" id="done">0 / 0</strong><span class="pill amber"
+                            id="status">Evidence pending</span></div>
+                    <div class="progressbar">
+                        <div id="bar"></div>
+                    </div>
+                    <p class="mini">A completed checklist does not guarantee the property is defect-free.</p>
+                </section>
+                <section class="panel">
+                    <h2 class="heading">Mortgage scenario</h2>
+                    <p class="mini">Illustrative repayment calculation; rate and term are editable.</p>
+                    <div class="fields" style="margin-top:16px">
+                        <div class="field"><label>Interest rate (%)</label><input type="number" id="rate" value="5"
+                                min="0" max="20" step="0.1"></div>
+                        <div class="field"><label>Mortgage years</label><input type="number" id="term" value="30"
+                                min="1" max="40" step="1"></div>
+                    </div>
+                    <div class="result">
+                        <div class="mini">Estimated mortgage per month</div><strong id="payment">£570</strong>
+                        <div class="mini" style="margin-top:3px">£106,200 borrowed · not a lender quote</div>
+                    </div>
+                </section>
+                <section class="panel">
+                    <h2 class="heading">Monthly outgoings</h2>
+                    <p class="mini">Enter known costs. Blank means unknown, not £0.</p>
+                    <div id="costs" style="margin-top:12px"></div>
+                    <div class="flex" style="margin-top:17px"><span class="mini">Mortgage + entered costs</span><b
+                            id="total">£570</b></div>
+                    <p class="mini" id="missing">Missing expenses</p>
+                </section>
+                <section class="panel">
+                    <h2 class="heading">Key unresolved risk</h2>
+                    <div class="risk"><strong>Musty smell</strong>
+                        <p>Noted in the flat and communal areas. The agent attributes it to the age of the building, but
+                            no cause is established.</p>
+                    </div>
+                    <div class="risk"><strong>Running costs</strong>
+                        <p>EPC, service-charge amount, heating fuel and historic energy bills are outstanding.</p>
+                    </div>
+                    <div class="risk"><strong>Shared ownership obligations</strong>
+                        <p>Check the lease, freehold-share structure, reserve fund and decision-making for major works.
+                        </p>
+                    </div>
+                </section>
+                <div class="callout"><b>Decision rule</b>
+                    <div style="margin-top:4px">Secure EPC and ownership/management paperwork first. If costs and terms
+                        are acceptable, commission a condition survey explicitly addressing moisture and the building
+                        envelope. Reassess before exchanging contracts.</div>
+                </div>
+            </aside>
+        </div>
+        <footer class="foot">Private local planner · No account or server · Edits stay in this browser unless you export
+            them</footer>
+    </div>
+    <script>
+        const groups = [{ title: '1 · Confirm the paperwork', desc: 'Resolve inexpensive deal-breakers before commissioning a survey.', tasks: ['Obtain the current EPC certificate and check insulation, glazing and heating entries', 'Confirm lease length and how the share of freehold is held', 'Obtain current service charge, ground rent (if any), and payment schedule', 'Request management accounts, reserve-fund balance and recent or proposed works', 'Request boiler service records, make/model and heating fuel', 'Request historic energy consumption in kWh or sample bills, if available'] }, { title: '2 · Establish affordability', desc: 'Budget for the whole flat, not just the mortgage.', tasks: ['Compare lender quotes for a 90% LTV repayment mortgage', 'Get conveyancing, survey, searches and any lender-fee estimates', 'Check council tax Band A amount and water charges', 'Build an all-in monthly budget including utilities and service charges', 'Allocate a renovation budget and retain a separate emergency reserve'] }, { title: '3 · Investigate physical condition', desc: 'After paperwork looks acceptable, pay for independent inspection.', tasks: ['Instruct an appropriate independent survey with explicit damp/musty-smell concerns', 'Have surveyor assess roof, external walls, windows, ventilation and water ingress', 'Check heating-system operation and radiator adequacy', 'Review findings and obtain specialist advice or repair quotations if recommended', 'Verify actual room dimensions and furniture/stair access'] }, { title: '4 · Decide before exchange', desc: 'Use evidence to proceed, renegotiate or withdraw.', tasks: ['Review solicitor findings, lease rights, repair liabilities and management arrangements', 'Compare survey findings and full costs against budget', 'Confirm mortgage offer and valuation are satisfactory', 'Choose proceed, renegotiate, or withdraw before exchange of contracts'] }];
+        const costLabels = ['Service charge', 'Ground rent', 'Council tax', 'Gas / heating', 'Electricity', 'Water', 'Insurance', 'Broadband', 'Maintenance reserve']; const key = 'flat_purchase_planner_v2'; let state = { checks: {}, costs: {}, notes: '', rate: 5, term: 30 }; try { state = { ...state, ...JSON.parse(localStorage.getItem(key) || '{}') } } catch { }; function save() { try { localStorage.setItem(key, JSON.stringify(state)); document.getElementById('saved').textContent = 'Saved locally' } catch (e) { document.getElementById('saved').textContent = 'Save failed — export your progress'; console.error('Unable to persist planner state', e) } }; const money = n => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(n); function update() { const ids = groups.flatMap((g, i) => g.tasks.map((_, j) => i + '-' + j)); const n = ids.filter(k => state.checks[k]).length, p = Math.round(100 * n / ids.length); document.getElementById('done').textContent = n + ' / ' + ids.length; document.getElementById('pct').textContent = p + '% complete'; document.getElementById('bar').style.width = p + '%'; document.getElementById('status').textContent = p === 100 ? 'All checked' : 'Evidence pending'; const r = Math.max(0, Number(state.rate) || 0) / 1200, m = Math.max(1, Number(state.term) || 30) * 12, L = 106200; let payment = r ? L * r / (1 - Math.pow(1 + r, -m)) : L / m; document.getElementById('payment').textContent = money(payment); let sum = payment, missing = 0; costLabels.forEach(l => { const v = state.costs[l]; if (v == null || v === '') missing++; else sum += Number(v) || 0 }); document.getElementById('total').textContent = money(sum); document.getElementById('missing').textContent = missing + ' / ' + costLabels.length + ' running-cost inputs missing · total incomplete' }
+        const wrap = document.getElementById('steps'); groups.forEach((g, i) => { let e = document.createElement('article'); e.className = 'step'; let h = document.createElement('div'); h.className = 'step-head'; h.innerHTML = '<div class="number">' + (i + 1) + '</div><div><h3>' + g.title + '</h3><p>' + g.desc + '</p></div>'; e.append(h); g.tasks.forEach((t, j) => { let k = i + '-' + j, l = document.createElement('label'); l.className = 'task'; let cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!state.checks[k]; cb.addEventListener('change', () => { state.checks[k] = cb.checked; save(); update() }); const tx = document.createElement('span'); tx.textContent = t; l.append(cb, tx); e.append(l) }); wrap.append(e) }); const costWrap = document.getElementById('costs'); costLabels.forEach(l => { let row = document.createElement('label'); row.className = 'cost-row'; let span = document.createElement('span'); span.textContent = l; let inp = document.createElement('input'); inp.type = 'number'; inp.min = '0'; inp.step = '1'; inp.placeholder = 'Unknown'; inp.value = state.costs[l] ?? ''; inp.addEventListener('input', () => { state.costs[l] = inp.value; save(); update() }); row.append(span, inp); costWrap.append(row) });['rate', 'term'].forEach(id => { const el = document.getElementById(id); el.value = state[id]; el.addEventListener('input', () => { state[id] = Number(el.value); save(); update() }) }); const notes = document.getElementById('notes'); notes.value = state.notes; notes.addEventListener('input', () => { state.notes = notes.value; save() }); document.getElementById('reset').addEventListener('click', () => { if (confirm('Clear all checklist ticks? Notes and costs will be retained.')) { state.checks = {}; document.querySelectorAll('.task input').forEach(x => x.checked = false); save(); update() } }); document.getElementById('export').addEventListener('click', () => { let data = { property: '£118,000 split-level share-of-freehold flat', exported: new Date().toISOString(), ...state, checklist: groups.map((g, i) => ({ stage: g.title, tasks: g.tasks.map((t, j) => ({ task: t, done: !!state.checks[i + '-' + j] })) })) }; const a = document.createElement('a'), blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); a.href = URL.createObjectURL(blob); a.download = 'flat-purchase-progress.json'; a.click(); URL.revokeObjectURL(a.href) }); update();
+    </script>
+</body>
+
+</html>
